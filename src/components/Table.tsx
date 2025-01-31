@@ -11,15 +11,17 @@ interface TableProps<T> {
   onView?: (item: T) => void;
   onDelete?: (item: T) => void;
   className?: string;
+  disabledRows?: Set<number>;
 }
 
-function Table<T extends object>({
+function Table<T extends { id: number }>({
   columns,
   data,
   onEdit,
   onView,
   onDelete,
   className = "",
+  disabledRows = new Set(),
 }: TableProps<T>) {
   return (
     <div className={`w-full overflow-x-auto ${className}`}>
@@ -42,51 +44,56 @@ function Table<T extends object>({
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="border-b border-custom-forest hover:bg-custom-forest/30 transition-colors"
-            >
-              {columns.map((column, colIndex) => (
-                <td
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`py-4 text-sm text-gray-300 ${
-                    column.className || ""
-                  }`}
-                >
-                  {String(row[column.accessor])}
+          {data.map((row, rowIndex) => {
+            const isDisabled = disabledRows.has(row.id);
+            return (
+              <tr
+                key={rowIndex}
+                className={`border-b border-custom-forest hover:bg-custom-forest/30 transition-colors ${
+                  isDisabled ? "opacity-50" : ""
+                }`}
+              >
+                {columns.map((column, colIndex) => (
+                  <td
+                    key={`${rowIndex}-${colIndex}`}
+                    className={`py-4 text-sm text-gray-300 ${
+                      column.className || ""
+                    }`}
+                  >
+                    {String(row[column.accessor])}
+                  </td>
+                ))}
+                <td className="py-4">
+                  <div className="flex gap-3">
+                    {onEdit && !isDisabled && (
+                      <button
+                        onClick={() => onEdit(row)}
+                        className="text-custom-lime hover:text-custom-lime/80"
+                      >
+                        <EditIcon />
+                      </button>
+                    )}
+                    {onView && (
+                      <button
+                        onClick={() => onView(row)}
+                        className="text-custom-lime hover:text-custom-lime/80"
+                      >
+                        <ViewIcon />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(row)}
+                        className="text-red-500 hover:text-red-400"
+                      >
+                        <DeleteIcon />
+                      </button>
+                    )}
+                  </div>
                 </td>
-              ))}
-              <td className="py-4">
-                <div className="flex gap-3">
-                  {onEdit && (
-                    <button
-                      onClick={() => onEdit(row)}
-                      className="text-custom-lime hover:text-custom-lime/80"
-                    >
-                      <EditIcon />
-                    </button>
-                  )}
-                  {onView && (
-                    <button
-                      onClick={() => onView(row)}
-                      className="text-custom-lime hover:text-custom-lime/80"
-                    >
-                      <ViewIcon />
-                    </button>
-                  )}
-                  {onDelete && (
-                    <button
-                      onClick={() => onDelete(row)}
-                      className="text-red-500 hover:text-red-400"
-                    >
-                      <DeleteIcon />
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
