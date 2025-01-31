@@ -17,7 +17,8 @@ export const useInventoryStats = (): InventoryStats => {
     return {
       totalProducts: activeProducts.length,
       totalStoreValue: activeProducts.reduce(
-        (sum, product) => sum + product.value,
+        (sum, product) =>
+          sum + Number(product.price?.replace("$", "")) * product.quantity,
         0
       ),
       outOfStock: activeProducts.filter(

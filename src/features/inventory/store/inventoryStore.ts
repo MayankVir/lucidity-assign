@@ -5,9 +5,6 @@ import { InventoryState, InventoryActions, Product } from '../types/inventory.ty
 type State = InventoryState;
 type Actions = InventoryActions;
 
-/**
- * Creates an immutable update to the products array
- */
 const updateProductsImmutably = (
   products: Product[],
   updatedProduct: Product

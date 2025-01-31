@@ -28,8 +28,6 @@ const InventoryPage = () => {
     return products.filter((product) => !disabledProductIds.has(product.id));
   }, [products, disabledProductIds]);
 
-  console.log({ products });
-
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
   };
@@ -48,8 +46,6 @@ const InventoryPage = () => {
       activeProducts.map((product) => product.category)
     ).size,
   };
-
-  console.log({ stats });
 
   return (
     <>
