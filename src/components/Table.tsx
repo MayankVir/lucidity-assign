@@ -25,21 +25,23 @@ function Table<T extends { id: number }>({
 }: TableProps<T>) {
   return (
     <div className={`w-full overflow-x-auto ${className}`}>
-      <table className="w-full">
+      <table className="w-full bg-custom-dark rounded-xl">
         <thead>
           <tr className="border-b border-custom-forest">
             {columns.map((column, index) => (
               <th
                 key={index}
-                className={`py-4 text-left text-custom-lime text-sm font-normal ${
+                className={`p-4  text-left text-custom-lime text-xs font-normal ${
                   column.className || ""
                 }`}
               >
-                {column.header}
+                <span className="bg-black p-1.5 px-3 rounded-xl">
+                  {column.header}
+                </span>
               </th>
             ))}
-            <th className="py-4 text-left text-custom-lime text-sm font-normal">
-              ACTION
+            <th className="p-4 text-left text-custom-lime text-xs font-normal">
+              <span className="bg-black p-1.5 px-3 rounded-xl">ACTION</span>
             </th>
           </tr>
         </thead>
@@ -49,26 +51,27 @@ function Table<T extends { id: number }>({
             return (
               <tr
                 key={rowIndex}
-                className={`border-b border-custom-forest hover:bg-custom-forest/30 transition-colors ${
+                className={` border-b border-custom-forest hover:bg-custom-forest/30 transition-colors ${
                   isDisabled ? "opacity-50" : ""
-                }`}
+                } ${rowIndex === data.length - 1 ? "border-b-0" : ""}`}
               >
                 {columns.map((column, colIndex) => (
                   <td
                     key={`${rowIndex}-${colIndex}`}
-                    className={`py-4 text-sm text-gray-300 ${
+                    className={`p-4 text-sm text-gray-300 ${
                       column.className || ""
                     }`}
                   >
                     {String(row[column.accessor])}
                   </td>
                 ))}
-                <td className="py-4">
+                <td className="p-4">
                   <div className="flex gap-3">
-                    {onEdit && !isDisabled && (
+                    {onEdit && (
                       <button
                         onClick={() => onEdit(row)}
-                        className="text-custom-lime hover:text-custom-lime/80"
+                        disabled={isDisabled}
+                        className="text-custom-lime hover:text-custom-lime/80 disabled:cursor-not-allowed"
                       >
                         <EditIcon />
                       </button>
@@ -84,7 +87,8 @@ function Table<T extends { id: number }>({
                     {onDelete && (
                       <button
                         onClick={() => onDelete(row)}
-                        className="text-red-500 hover:text-red-400"
+                        disabled={isDisabled}
+                        className="text-red-500 hover:text-red-400 disabled:cursor-not-allowed"
                       >
                         <DeleteIcon />
                       </button>

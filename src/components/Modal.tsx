@@ -29,8 +29,8 @@ const Modal: React.FC<ModalProps> = ({
         {/* Modal Content */}
         <div className="relative inline-block transform overflow-hidden rounded-lg bg-custom-dark text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
           <div className="px-6 py-4">
-            <div className="flex items-center justify-between border-b border-custom-forest pb-4">
-              <h3 className="text-lg font-medium text-white">{title}</h3>
+            <div className="flex items-center justify-between  pb-4">
+              <h3 className="text-2xl font-medium text-white">{title}</h3>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-300"
@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({
               </button>
             </div>
 
-            <div className="mt-4">{children}</div>
+            <div>{children}</div>
 
             <div className="mt-6 flex justify-end gap-3">
               <button

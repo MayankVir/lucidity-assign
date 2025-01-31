@@ -1,4 +1,4 @@
-import { useInventoryStore } from "../../store/useInventoryStore";
+import { useInventoryStore } from "../../features/inventory/store/inventoryStore";
 
 const Header = () => {
   const { isAdmin, toggleAdminMode } = useInventoryStore();

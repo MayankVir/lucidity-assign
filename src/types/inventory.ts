@@ -2,9 +2,9 @@ export interface Product {
   id: number;
   name: string;
   category: string;
-  price: number;
+  price: string;
   quantity: number;
-  value: number;
+  value: string;
   isDisabled?: boolean;
 }
 

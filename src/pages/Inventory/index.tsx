@@ -1,62 +1,55 @@
 import { useMemo } from "react";
 import Card from "../../components/Card";
 
-import { useInventoryStore } from "../../store/useInventoryStore";
 import Table from "../../components/Table";
 import { Product } from "../../types/inventory";
-import Modal from "../../components/Modal";
-import { useInventoryQuery } from "../../http-hooks/useInventoryQuery";
 
-import CartIcon from "../../assets/cart.svg";
-import ValueIcon from "../../assets/value.svg";
-import StockIcon from "../../assets/stock.svg";
-import CategoryIcon from "../../assets/category.svg";
+import CartIcon from "../../assets/svgs/CartIcon";
+import StockIcon from "../../assets/svgs/StockIcon";
+import CategoryIcon from "../../assets/svgs/CategoryIcon";
+
+import { columns } from "../../features/inventory/constants/constants";
+import ValueIcon from "../../assets/svgs/ValueIcon";
+import { useInventoryOperations } from "../../features/inventory/hooks/useInventoryOperations";
+import { useInventoryStore } from "../../features/inventory/store/inventoryStore";
+import EditProductModal from "./components/EditProductModal";
 
 const InventoryPage = () => {
-  const { data: products = [], isLoading } = useInventoryQuery();
+  const { products, isAdmin, disabledProductIds } = useInventoryOperations();
 
   const {
-    isAdmin,
     editingProduct,
     setEditingProduct,
-    disabledProductIds,
     toggleProductDisabled,
     deleteProduct,
-    updateProduct,
   } = useInventoryStore();
 
   const activeProducts = useMemo(() => {
     return products.filter((product) => !disabledProductIds.has(product.id));
   }, [products, disabledProductIds]);
 
+  console.log({ products });
+
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
   };
 
-  const handleSave = (updatedProduct: Product) => {
-    updateProduct(updatedProduct);
-    setEditingProduct(null);
+  // Compute inventory stats
+  const stats = {
+    totalProducts: activeProducts.length,
+    totalStoreValue: activeProducts.reduce(
+      (sum, product) =>
+        sum + Number(product.price?.replace("$", "")) * product.quantity,
+      0
+    ),
+    outOfStock: activeProducts.filter((product) => product.quantity === 0)
+      .length,
+    numberOfCategories: new Set(
+      activeProducts.map((product) => product.category)
+    ).size,
   };
 
-  // Compute inventory stats
-  const stats = useMemo(() => {
-    return {
-      totalProducts: activeProducts.length,
-      totalStoreValue: activeProducts.reduce(
-        (sum, product) => sum + product.value,
-        0
-      ),
-      outOfStock: activeProducts.filter((product) => product.quantity === 0)
-        .length,
-      numberOfCategories: new Set(
-        activeProducts.map((product) => product.category)
-      ).size,
-    };
-  }, [activeProducts]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  console.log({ stats });
 
   return (
     <>
@@ -98,82 +91,7 @@ const InventoryPage = () => {
         disabledRows={disabledProductIds}
       />
 
-      {editingProduct && (
-        <Modal
-          isOpen={!!editingProduct}
-          onClose={() => setEditingProduct(null)}
-          title="Edit product"
-          onSave={() => {
-            if (editingProduct) {
-              handleSave(editingProduct);
-            }
-          }}
-        >
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-custom-lime mb-1">
-                Category
-              </label>
-              <input
-                type="text"
-                value={editingProduct.category}
-                onChange={(e) =>
-                  setEditingProduct({
-                    ...editingProduct,
-                    category: e.target.value,
-                  })
-                }
-                className="w-full bg-custom-forest rounded p-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-custom-lime mb-1">
-                Price
-              </label>
-              <input
-                type="number"
-                value={editingProduct.price}
-                onChange={(e) =>
-                  setEditingProduct({
-                    ...editingProduct,
-                    price: Number(e.target.value),
-                  })
-                }
-                className="w-full bg-custom-forest rounded p-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-custom-lime mb-1">
-                Quantity
-              </label>
-              <input
-                type="number"
-                value={editingProduct.quantity}
-                onChange={(e) => {
-                  const quantity = Number(e.target.value);
-                  setEditingProduct({
-                    ...editingProduct,
-                    quantity,
-                    value: quantity * editingProduct.price,
-                  });
-                }}
-                className="w-full bg-custom-forest rounded p-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-custom-lime mb-1">
-                Value
-              </label>
-              <input
-                type="number"
-                value={editingProduct.value}
-                disabled
-                className="w-full bg-custom-forest/50 rounded p-2 text-gray-400"
-              />
-            </div>
-          </div>
-        </Modal>
-      )}
+      {editingProduct && <EditProductModal />}
     </>
   );
 };
