@@ -7,7 +7,7 @@ const Header = () => {
     <div className="flex justify-between items-center mb-8">
       <h1 className="text-4xl text-white">Inventory stats</h1>
       <div className="flex items-center gap-2">
-        <span className="text-gray-400">admin</span>
+        <span className="text-gray-400">user</span>
         <button
           onClick={toggleAdminMode}
           className={`w-12 h-6 rounded-full ${
@@ -20,7 +20,7 @@ const Header = () => {
             }`}
           />
         </button>
-        <span className="text-gray-400">user</span>
+        <span className="text-gray-400">admin</span>
       </div>
     </div>
   );
